@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roda dos Zumbis · PvZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: 'Nunito', sans-serif;
+    color: #2b1a0e;
+  }
+
+  body {
+    background: #1e130a;
+    background-image:
+      radial-gradient(ellipse at top, #3d2615 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,0.015) 3px 4px);
+    min-height: 100vh;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Moldura de madeira com papel dentro */
+  .frame {
+    background: #f0dba8;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(139,94,52,0.03) 0 20px, transparent 20px 40px);
+    border: 14px solid #6b3e1e;
+    outline: 4px solid #2b1a0e;
+    border-radius: 14px;
+    padding: 26px 28px 28px;
+    box-shadow: 12px 12px 0 rgba(0,0,0,0.35);
+    max-width: 1080px;
+    width: 100%;
+  }
+
+  h1 {
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 2.4rem;
+    text-align: center;
+    color: #4a2f1a;
+    text-shadow: 3px 3px 0 #f0dba8, 4px 4px 0 #6b3e1e;
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+    transform: rotate(-1deg);
+  }
+
+  .sub {
+    text-align: center;
+    color: #6b3e1e;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-style: italic;
+    margin-bottom: 22px;
+  }
+
+  main {
+    display: flex;
+    gap: 34px;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ---- Coluna da roda ---- */
+  .wheel-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .wheel-wrap {
+    position: relative;
+    width: 470px;
+    height: 470px;
+    max-width: 82vw;
+    max-height: 82vw;
+  }
+
+  .wheel {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transition: transform 6s cubic-bezier(0.17, 0.67, 0.2, 1);
+    filter: drop-shadow(6px 6px 0 rgba(43,26,14,0.3));
+  }
+
+  .hub {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92px; height: 92px;
+    border-radius: 50%;
+    background: #f0dba8;
+    border: 5px solid #2b1a0e;
+    box-shadow: inset 0 0 0 4px #8b5e34, 3px 3px 0 rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.6rem;
+    z-index: 3;
+  }
+
+  /* Ponteiro em cima */
+  .pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 22px solid transparent;
+    border-right: 22px solid transparent;
+    border-top: 42px solid #c62828;
+    filter: drop-shadow(0 4px 0 #7f0000);
+    z-index: 4;
+  }
+
+  button {
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 1.15rem;
+    letter-spacing: 2px;
+    padding: 14px 34px;
+    border: 4px solid #2b1a0e;
+    border-radius: 12px;
+    background: #7cb342;
+    color: #2b1a0e;
+    cursor: pointer;
+    box-shadow: 6px 6px 0 #2b1a0e;
+    transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
+    text-transform: uppercase;
+  }
+  button:hover:not(:disabled) { background: #8bc34a; }
+  button:active:not(:disabled) {
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0 #2b1a0e;
+  }
+  button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: #b0a08c;
+  }
+
+  .result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #2b1a0e;
+    border-radius: 12px;
+    padding: 10px 22px;
+    min-width: 260px;
+    justify-content: center;
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.25);
+  }
+  .r-label {
+    font-size: 0.72rem;
+    letter-spacing: 2px;
+    color: #a5c46c;
+    font-weight: 800;
+  }
+  .r-value {
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 1.25rem;
+    color: #ffeb3b;
+  }
+
+  /* ---- Coluna da tabela ---- */
+  .table-col {
+    flex: 1 1 280px;
+    max-width: 340px;
+    min-width: 260px;
+    background: #faf0d4;
+    border: 4px solid #6b3e1e;
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: inset 0 0 0 3px #c9a86a, 4px 4px 0 rgba(0,0,0,0.2);
+  }
+
+  .table-col h2 {
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 1.1rem;
+    color: #4a2f1a;
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+    border-bottom: 2px dashed #c9a86a;
+    padding-bottom: 8px;
+  }
+
+  .zombie-list {
+    list-style: none;
+    max-height: 430px;
+    overflow-y: auto;
+  }
+  .zombie-list::-webkit-scrollbar { width: 8px; }
+  .zombie-list::-webkit-scrollbar-track { background: #ecdcb3; border-radius: 8px; }
+  .zombie-list::-webkit-scrollbar-thumb { background: #8b5e34; border-radius: 8px; }
+
+  .zombie-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 8px;
+    border-bottom: 1px dashed rgba(107, 62, 30, 0.2);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #3a2415;
+    border-radius: 6px;
+    transition: background 0.15s, transform 0.15s;
+  }
+  .zombie-list li:last-child { border-bottom: none; }
+  .zombie-list li.highlight {
+    background: #ffe082;
+    color: #2b1a0e;
+    font-weight: 800;
+    transform: scale(1.03);
+    box-shadow: 2px 2px 0 #2b1a0e;
+  }
+  .swatch {
+    width: 18px; height: 18px;
+    border: 2px solid #2b1a0e;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .num {
+    font-family: 'Luckiest Guy', cursive;
+    font-size: 0.85rem;
+    color: #8b5e34;
+    min-width: 22px;
+    text-align: center;
+  }
+
+  @media (max-width: 820px) {
+    h1 { font-size: 1.7rem; }
+    .frame { padding: 18px; border-width: 10px; }
+    .wheel-wrap { width: 380px; height: 380px; }
+    .hub { width: 72px; height: 72px; font-size: 2rem; }
+    .pointer {
+      border-left-width: 16px;
+      border-right-width: 16px;
+      border-top-width: 32px;
+      top: -14px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <h1>🌻 Roda dos Zumbis 🌿</h1>
+  <p class="sub">Gire a roda e veja qual zumbi vai aparecer no seu jardim</p>
+
+  <main>
+    <section class="wheel-col">
+      <div class="wheel-wrap">
+        <div class="pointer"></div>
+        <svg class="wheel" id="wheel" viewBox="-100 -100 200 200"></svg>
+        <div class="hub">🧠</div>
+      </div>
+
+      <button id="spinBtn">Girar a Roda</button>
+
+      <div class="result">
+        <span class="r-label">CAIU:</span>
+        <span class="r-value" id="resultValue">—</span>
+      </div>
+    </section>
+
+    <aside class="table-col">
+      <h2>Zumbis possíveis</h2>
+      <ul class="zombie-list" id="zombieList"></ul>
+    </aside>
+  </main>
+</div>
+
+<script>
+  // ============================================================
+  // LISTA DE ZUMBIS (12 — cabe bem na roda, nome curto + completo)
+  // ============================================================
+  const ZOMBIES = [
+    { short: 'Comum',     full: 'Zumbi Comum' },
+    { short: 'Cone',      full: 'Zumbi Cabeça de Cone' },
+    { short: 'Balde',     full: 'Zumbi Cabeça de Balde' },
+    { short: 'Bandeira',  full: 'Zumbi Porta-Bandeira' },
+    { short: 'Jornal',    full: 'Zumbi do Jornal' },
+    { short: 'Porta',     full: 'Zumbi Porta' },
+    { short: 'Futebol',   full: 'Zumbi Futebol' },
+    { short: 'Dançarino', full: 'Zumbi Dançarino' },
+    { short: 'Balão',     full: 'Zumbi-Balão' },
+    { short: 'Gargantuar',full: 'Gargantuar' },
+    { short: 'Devorador', full: 'Devorador' },
+    { short: 'Dr. Zumbão',full: 'Dr. Zumbão' }
+  ];
+
+  // Cores sólidas saturadas (estilo cartoon, tipo a roleta de referência)
+  const CORES = [
+    '#e53935', // vermelho
+    '#fb8c00', // laranja
+    '#fdd835', // amarelo
+    '#7cb342', // verde
+    '#00897b', // verde-água
+    '#1e88e5', // azul
+    '#5e35b1', // roxo
+    '#d81b60', // rosa
+    '#6d4c41', // marrom
+    '#c0ca33', // verde-limão
+    '#3949ab', // índigo
+    '#ef6c00'  // laranja escuro
+  ];
+
+  const N = ZOMBIES.length;
+  const SEG = 360 / N;              // ângulo de cada fatia (30° para 12)
+  const SVGNS = 'http://www.w3.org/2000/svg';
+
+  const wheelSvg    = document.getElementById('wheel');
+  const spinBtn     = document.getElementById('spinBtn');
+  const resultValue = document.getElementById('resultValue');
+  const zombieList  = document.getElementById('zombieList');
+
+  let rotation = 0;         // rotação acumulada em graus
+  let spinning = false;
+
+  // ============================================================
+  // DESENHAR A RODA NO SVG
+  // ============================================================
+  function desenharRoda() {
+    const R = 95;
+
+    ZOMBIES.forEach((z, i) => {
+      const startAngle = -90 + i * SEG;          // topo = -90°
+      const endAngle   = startAngle + SEG;
+      const midAngle   = startAngle + SEG / 2;
+
+      const sRad = startAngle * Math.PI / 180;
+      const eRad = endAngle   * Math.PI / 180;
+
+      const x1 = Math.cos(sRad) * R, y1 = Math.sin(sRad) * R;
+      const x2 = Math.cos(eRad) * R, y2 = Math.sin(eRad) * R;
+
+      // Fatia (path de pizza)
+      const path = document.createElementNS(SVGNS, 'path');
+      path.setAttribute('d', `M 0 0 L ${x1} ${y1} A ${R} ${R} 0 0 1 ${x2} ${y2} Z`);
+      path.setAttribute('fill', CORES[i % CORES.length]);
+      path.setAttribute('stroke', '#2b1a0e');
+      path.setAttribute('stroke-width', '1');
+      path.setAttribute('stroke-linejoin', 'round');
+      wheelSvg.appendChild(path);
+
+      // Texto radial (curto)
+      const textR = R * 0.62;
+      const text = document.createElementNS(SVGNS, 'text');
+      text.setAttribute('font-family', 'Luckiest Guy, cursive');
+      text.setAttribute('font-size', '5');
+      text.setAttribute('fill', '#2b1a0e');
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('dominant-baseline', 'middle');
+      text.setAttribute('style',
+        'paint-order: stroke; stroke: rgba(255,255,255,0.85); stroke-width: 1.4; stroke-linejoin: round;');
+      text.textContent = z.short;
+
+      // Vira o texto do lado de baixo pra ficar legível
+      const flip = midAngle > 90 && midAngle < 270;
+      const transform = flip
+        ? `rotate(${midAngle + 180}) translate(${-textR}, 0)`
+        : `rotate(${midAngle}) translate(${textR}, 0)`;
+      text.setAttribute('transform', transform);
+      wheelSvg.appendChild(text);
+    });
+
+    // Anel externo de madeira
+    const anel = document.createElementNS(SVGNS, 'circle');
+    anel.setAttribute('cx', '0');
+    anel.setAttribute('cy', '0');
+    anel.setAttribute('r', '96');
+    anel.setAttribute('fill', 'none');
+    anel.setAttribute('stroke', '#6b3e1e');
+    anel.setAttribute('stroke-width', '8');
+    wheelSvg.appendChild(anel);
+
+    // Contorno fino por fora
+    const contorno = document.createElementNS(SVGNS, 'circle');
+    contorno.setAttribute('cx', '0');
+    contorno.setAttribute('cy', '0');
+    contorno.setAttribute('r', '99');
+    contorno.setAttribute('fill', 'none');
+    contorno.setAttribute('stroke', '#2b1a0e');
+    contorno.setAttribute('stroke-width', '1.5');
+    wheelSvg.appendChild(contorno);
+  }
+
+  // ============================================================
+  // TABELA LATERAL
+  // ============================================================
+  function construirTabela() {
+    ZOMBIES.forEach((z, i) => {
+      const li = document.createElement('li');
+      li.dataset.index = i;
+      li.innerHTML = `
+        <span class="num">${i + 1}</span>
+        <span class="swatch" style="background:${CORES[i % CORES.length]}"></span>
+        <span>${z.full}</span>
+      `;
+      zombieList.appendChild(li);
+    });
+  }
+
+  // ============================================================
+  // DESCOBRIR O VENCEDOR PARA UMA DADA ROTAÇÃO
+  // Ponteiro fica em cima (-90°) — achamos qual fatia está lá
+  // ============================================================
+  function acharVencedor(rot) {
+    const alvo = ((-90 - rot) % 360 + 360) % 360;
+    for (let i = 0; i < N; i++) {
+      const s = -90 + i * SEG;
+      const sNorm = ((s % 360) + 360) % 360;
+      const eNorm = sNorm + SEG;
+      if (eNorm > 360) {
+        if (alvo >= sNorm || alvo < (eNorm - 360)) return i;
+      } else {
+        if (alvo >= sNorm && alvo < eNorm) return i;
+      }
+    }
+    return 0;
+  }
+
+  // ============================================================
+  // GIRAR
+  // ============================================================
+  function girar() {
+    if (spinning) return;
+    spinning = true;
+    spinBtn.disabled = true;
+    spinBtn.textContent = 'Girando...';
+    resultValue.textContent = '...';
+    document.querySelectorAll('.zombie-list li').forEach(li => li.classList.remove('highlight'));
+
+    // Sorteia o vencedor e calcula a rotação final
+    const vencedor = Math.floor(Math.random() * N);
+    const centroFatia = -90 + vencedor * SEG + SEG / 2;
+
+    // Rotação-alvo (mod 360): precisamos que centroFatia + rot ≡ -90
+    const alvoBase = ((-90 - centroFatia) % 360 + 360) % 360;
+    const atualBase = ((rotation % 360) + 360) % 360;
+    let delta = alvoBase - atualBase;
+    if (delta < 0) delta += 360;
+
+    const voltas = 5 + Math.floor(Math.random() * 3); // 5 a 7 voltas
+    rotation += voltas * 360 + delta;
+
+    wheelSvg.style.transform = `rotate(${rotation}deg)`;
+
+    // Aguarda a transição do CSS (6s)
+    setTimeout(() => {
+      resultValue.textContent = ZOMBIES[vencedor].full;
+      const linha = document.querySelector(`.zombie-list li[data-index="${vencedor}"]`);
+      if (linha) linha.classList.add('highlight');
+      spinning = false;
+      spinBtn.disabled = false;
+      spinBtn.textContent = 'Girar de novo';
+    }, 6150);
+  }
+
+  // ============================================================
+  // INICIAR
+  // ============================================================
+  desenharRoda();
+  construirTabela();
+  spinBtn.addEventListener('click', girar);
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === ' ' || e.key === 'Enter') && !spinBtn.disabled) {
+      e.preventDefault();
+      girar();
+    }
+  });
+</script>
+
+</body>
+</html>
