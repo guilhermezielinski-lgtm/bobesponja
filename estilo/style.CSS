@@ -1,0 +1,131 @@
+@charset "UTF-8";
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Luckiest+Guy&family=Nunito:wght@600;800&display=swap');
+
+@font-face {
+    font-family: 'android';
+    src: url('../fontes/idroid.otf') format('opentype');
+    font-weight: normal;
+}
+
+:root {
+    /* Paleta de Cores - Fenda do Biquíni */
+    --cor0: #e0f7fa; /* Azul claro / Água de fundo */
+    --cor1: #00acc1; /* Azul oceano principal */
+    --cor2: #00838f; /* Azul escuro */
+    --cor3: #005662; /* Azul profundo */
+    --cor4: #ffeb3b; /* Amarelo Bob Esponja */
+    --cor5: #f48fb1; /* Rosa Patrick */
+
+    --font-padrao: 'Nunito', Arial, Verdana, Helvetica, sans-serif;
+    --font-destaque: 'Luckiest Guy', 'Bebas Neue', cursive, sans-serif;
+    --font-android: 'android', 'cursive';
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--cor0);
+    font-family: var(--font-padrao);
+    color: #2b1a0e;
+}
+
+a.externo::after {
+    content: '\00A0\1F517';
+}
+
+header {
+    background-image: linear-gradient(to bottom, var(--cor2), var(--cor1));
+    min-height: 150px;
+    text-align: center;
+    padding-top: 20px;
+}
+
+header > h1 {
+    color: var(--cor4);
+    font-family: var(--font-destaque);
+    font-size: 3em;
+    font-weight: normal;
+    margin-bottom: 10px;
+    text-shadow: 3px 3px 0px #2b1a0e;
+    margin-right: 4px;
+    letter-spacing: 2px;
+}
+
+header > p {
+    font-family: var(--font-padrao);
+    font-size: 1.2em;
+    color: #ffffff;
+    max-width: 500px;
+    margin: auto;
+    padding: 10px;
+    padding-bottom: 30px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-weight: 600;
+}
+
+nav {
+    background-color: var(--cor3);
+    padding: 12px;
+    box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.167);
+    text-align: center;
+}
+
+nav > a {
+    color: var(--cor4);
+    font-weight: bold;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+nav > a:hover {
+    background-color: var(--cor4);
+    color: var(--cor3);
+}
+
+main {
+    min-width: 300px;
+    max-width: 1000px;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+}
+
+main h1, main h2, main h3 {
+    font-family: var(--font-destaque);
+    color: var(--cor2);
+    margin-bottom: 15px;
+}
+
+main p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+footer {
+    background-color: var(--cor3);
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: 30px;
+}
+
+footer a {
+    color: var(--cor4);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
